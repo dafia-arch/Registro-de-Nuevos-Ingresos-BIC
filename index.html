@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Candidatos - BIC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>Registro de Nuevo Ingreso</h2>
+        <p>Por favor, completa tu información y sube tus documentos.</p>
+    </div>
+
+    <form id="datosForm" class="form-card">
+        
+        <!-- SECCIÓN 1: DATOS PERSONALES -->
+        <h3 class="section-title">Datos Personales</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Nombre(s) *</label>
+                <input type="text" id="nombre" required>
+            </div>
+            <div class="form-group">
+                <label>Apellido Paterno *</label>
+                <input type="text" id="apellidoPaterno" required>
+            </div>
+            <div class="form-group">
+                <label>Apellido Materno *</label>
+                <input type="text" id="apellidoMaterno" required>
+            </div>
+            <div class="form-group">
+                <label>Fecha de Nacimiento *</label>
+                <input type="date" id="fechaNacimiento" required>
+            </div>
+        </div>
+
+        <div class="grid-3">
+            <div class="form-group">
+                <label>RFC (Con Homoclave) *</label>
+                <input type="text" id="rfc" maxlength="13" required>
+            </div>
+            <div class="form-group">
+                <label>CURP *</label>
+                <input type="text" id="curp" maxlength="18" required>
+            </div>
+            <div class="form-group">
+                <label>NSS (11 dígitos) *</label>
+                <input type="text" id="nss" maxlength="11" required>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>WhatsApp / Celular *</label>
+                <input type="tel" id="telefonoWhatsapp" maxlength="10" required>
+            </div>
+            <div class="form-group">
+                <label>Estado Civil *</label>
+                <select id="estadoCivil" required>
+                    <option value="">Selecciona...</option>
+                    <option value="Soltero">Soltero(a)</option>
+                    <option value="Casado">Casado(a)</option>
+                    <option value="Unión Libre">Unión Libre</option>
+                    <option value="Divorciado">Divorciado(a)</option>
+                    <option value="Viudo">Viudo(a)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DINÁMICA: PAREJA -->
+        <div id="seccionPareja" class="hidden dynamic-box">
+            <h4>Datos de la Pareja</h4>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Nombre Completo de Pareja *</label>
+                    <input type="text" id="pareja">
+                </div>
+                <div class="form-group">
+                    <label>Fecha Nacimiento Pareja *</label>
+                    <input type="date" id="fechaNacPareja">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>📄 Acta de Pareja (PDF/JPG) *</label>
+                <input type="file" id="fileActaPareja" accept=".pdf,image/*">
+            </div>
+        </div>
+
+        <!-- SECCIÓN DINÁMICA: HIJOS -->
+        <div class="form-group mt-15">
+            <label>¿Tienes Hijos?</label>
+            <select id="tieneHijos">
+                <option value="No">No</option>
+                <option value="Si">Sí</option>
+            </select>
+        </div>
+        <div id="seccionCantidadHijos" class="hidden">
+            <div class="form-group">
+                <label>¿Cuántos hijos tienes? *</label>
+                <select id="cantidadHijos">
+                    <option value="0">0</option>
+                    <option value="1">1</option><option value="2">2</option>
+                    <option value="3">3</option><option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+        </div>
+        <div id="contenedorHijos"></div> <!-- Aquí se inyectan los hijos con JS -->
+
+        <!-- SECCIÓN 2: DOMICILIO -->
+        <h3 class="section-title mt-30">Domicilio</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Código Postal * <span id="cp-status" style="font-size: 0.8em; margin-left: 10px;"></span></label>
+                <input type="text" id="codigoPostal" maxlength="5" required>
+            </div>
+            <div class="form-group">
+                <label>Municipio/Ciudad *</label>
+                <input type="text" id="ciudad" readonly required>
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="form-group" id="container-colonia-select">
+                <label>Colonia *</label>
+                <select id="colonia-select"></select>
+            </div>
+            <div class="form-group hidden" id="container-colonia-input">
+                <label>Colonia (Escríbela) *</label>
+                <input type="text" id="colonia-input">
+            </div>
+            <div class="form-group">
+                <label>Calle y Número *</label>
+                <input type="text" id="calleNumero" required>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: EXPEDIENTE DIGITAL -->
+        <h3 class="section-title mt-30">Expediente Digital (PDF o Imagen)</h3>
+        <div class="grid-2">
+            <div class="form-group"><label>📄 Acta de Nacimiento *</label><input type="file" id="fileActaNac" accept=".pdf,image/*" required></div>
+            <div class="form-group"><label>📄 INE (Frente y Vuelta) *</label><input type="file" id="fileIne" accept=".pdf,image/*" required></div>
+            <div class="form-group"><label>📄 CURP *</label><input type="file" id="fileCurp" accept=".pdf,image/*" required></div>
+            <div class="form-group"><label>📄 Constancia Situación Fiscal *</label><input type="file" id="fileCsf" accept=".pdf,image/*" required></div>
+            <div class="form-group"><label>📄 Número de Seguro Social *</label><input type="file" id="fileNss" accept=".pdf,image/*" required></div>
+            <div class="form-group"><label>📄 Comprobante de Domicilio *</label><input type="file" id="fileDomicilio" accept=".pdf,image/*" required></div>
+            <div class="form-group"><label>📄 Comprobante de Estudios *</label><input type="file" id="fileEstudios" accept=".pdf,image/*" required></div>
+        </div>
+
+        <div id="status" class="status-message"></div>
+
+        <button type="submit" id="btnEnviar" class="btn-submit">Guardar Candidato y Expediente</button>
+    </form>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
