@@ -1,11 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // 1. AUTOFORMATO DE TEXTO
+    // 1. AUTOFORMATO DE TEXTO (Mayúsculas y Tipo Título)
     document.addEventListener('input', function(e) {
       if (e.target.tagName === 'INPUT' && e.target.type === 'text') {
         const excludedIds = ['rfc', 'curp', 'nss', 'codigoPostal', 'numeroDomicilio'];
         if (excludedIds.includes(e.target.id)) {
-            if(e.target.id === 'rfc' || e.target.id === 'curp') e.target.value = e.target.value.toUpperCase();
+            if(e.target.id === 'rfc' || e.target.id === 'curp') {
+                const start = e.target.selectionStart;
+                e.target.value = e.target.value.toUpperCase();
+                e.target.setSelectionRange(start, start);
+            }
             return;
         }
         const el = e.target;
@@ -19,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   
-    // 2. FILTRO DE NÚMEROS
+    // 2. FILTRO DE NÚMEROS ESTRICTO
     const camposNumericos = ['codigoPostal', 'telefonoWhatsapp', 'nss', 'telefonoContactoEmergencia', 'telefonoContactoEmergencia2'];
     camposNumericos.forEach(id => {
       const campo = document.getElementById(id);
@@ -30,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   
-    // 3. BÚSQUEDA DE CÓDIGO POSTAL
+    // 3. BÚSQUEDA DE CÓDIGO POSTAL DESDE GITHUB
     const cpInput = document.getElementById('codigoPostal');
     const cpStatus = document.getElementById('cp-status');
     const ciudadInput = document.getElementById('ciudad');
@@ -54,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             ciudadInput.value = '';
             coloniaSelect.innerHTML = '<option value="">Primero ingresa un C.P.</option>';
-            cpStatus.innerText = '';
+            if(cpStatus) cpStatus.innerText = '';
             containerSelect.classList.remove('hidden');
             containerInput.classList.add('hidden');
         }
@@ -62,6 +66,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   
     function buscarCPLocal(cp) {
+        if(datosCPOffline.length === 0) {
+            if(cpStatus) { cpStatus.style.color = '#d97706'; cpStatus.innerText = 'Cargando base de datos, intenta en un segundo...'; }
+            return;
+        }
         const resultados = datosCPOffline.filter(item => item.codigo === cp);
         if (resultados.length > 0) {
             ciudadInput.value = resultados[0].municipio || '';
@@ -74,11 +82,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             containerSelect.classList.remove('hidden');
             containerInput.classList.add('hidden');
-            cpStatus.style.color = 'green';
-            cpStatus.innerText = '✅ C.P. Encontrado';
+            if(cpStatus) { cpStatus.style.color = 'green'; cpStatus.innerText = '✅ C.P. Encontrado'; }
         } else {
-            cpStatus.style.color = '#d97706';
-            cpStatus.innerText = '⚠️ C.P. no encontrado. Ingresa manual.';
+            if(cpStatus) { cpStatus.style.color = '#d97706'; cpStatus.innerText = '⚠️ C.P. no encontrado. Ingresa manual.'; }
             ciudadInput.value = '';
             containerSelect.classList.add('hidden');
             containerInput.classList.remove('hidden');
@@ -91,16 +97,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (estadoCivil) {
       estadoCivil.addEventListener('change', function() {
         let val = this.value;
-        if (val === 'Casado' || val === 'Unión Libre') {
+        const inputPareja = document.getElementById('pareja');
+        const inputFechaPareja = document.getElementById('fechaNacPareja');
+        const inputFilePareja = document.getElementById('fileActaPareja');
+
+        if (val === 'Casado(a)' || val === 'Unión Libre') {
           seccionPareja.classList.remove('hidden');
-          document.getElementById('pareja').required = true;
-          document.getElementById('fechaNacPareja').required = true;
-          document.getElementById('fileActaPareja').required = true;
+          if(inputPareja) inputPareja.required = true;
+          if(inputFechaPareja) inputFechaPareja.required = true;
+          if(inputFilePareja) inputFilePareja.required = true;
         } else {
           seccionPareja.classList.add('hidden');
-          document.getElementById('pareja').required = false;
-          document.getElementById('fechaNacPareja').required = false;
-          document.getElementById('fileActaPareja').required = false;
+          // Limpiamos los datos si se oculta la sección para no enviarlos por error
+          if(inputPareja) { inputPareja.required = false; inputPareja.value = ''; }
+          if(inputFechaPareja) { inputFechaPareja.required = false; inputFechaPareja.value = ''; }
+          if(inputFilePareja) { inputFilePareja.required = false; inputFilePareja.value = ''; }
         }
       });
     }
@@ -117,8 +128,8 @@ document.addEventListener('DOMContentLoaded', function() {
           seccionCantidad.classList.remove('hidden');
         } else {
           seccionCantidad.classList.add('hidden');
-          cantidadHijos.value = "0";
-          contenedorHijos.innerHTML = '';
+          if(cantidadHijos) cantidadHijos.value = "0";
+          if(contenedorHijos) contenedorHijos.innerHTML = '';
         }
       });
     }
@@ -126,31 +137,33 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cantidadHijos) {
       cantidadHijos.addEventListener('change', function() {
         let cantidad = parseInt(this.value);
-        contenedorHijos.innerHTML = '';
-        for(let i = 1; i <= cantidad; i++) {
-          contenedorHijos.innerHTML += `
-            <div class="dynamic-box">
-              <h4>Datos del Hijo ${i}</h4>
-              <div class="grid-2">
-                <div class="form-group">
-                    <label>Nombre Completo *</label>
-                    <input type="text" id="hijo${i}" class="form-control-custom" required>
+        if(contenedorHijos) contenedorHijos.innerHTML = '';
+        if(cantidad > 0 && contenedorHijos) {
+            for(let i = 1; i <= cantidad; i++) {
+            contenedorHijos.innerHTML += `
+                <div class="dynamic-section">
+                <h4 class="dynamic-title">Hijo ${i}</h4>
+                <div class="form-grid" style="margin-bottom: 15px;">
+                    <div class="form-group-custom-mb0">
+                        <label>Nombre Completo Hijo ${i} *</label>
+                        <input type="text" id="hijo${i}" class="form-control-custom" required>
+                    </div>
+                    <div class="form-group-custom-mb0">
+                        <label>Fecha Nacimiento Hijo ${i} *</label>
+                        <input type="date" id="fechaNacHijo${i}" class="form-control-custom" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Fecha Nacimiento *</label>
-                    <input type="date" id="fechaNacHijo${i}" class="form-control-custom" required>
+                <div class="file-upload-wrapper mb0">
+                    <label>🍼 Acta de Nacimiento (PDF/JPG) *</label>
+                    <input type="file" id="fileActaHijo${i}" accept=".pdf,image/*" class="form-control-custom" required>
                 </div>
-              </div>
-              <div class="file-upload-wrapper mt-15">
-                <label>🍼 Acta de Nacimiento (PDF/JPG) *</label>
-                <input type="file" id="fileActaHijo${i}" accept=".pdf,image/*" class="form-control-custom" required>
-              </div>
-            </div>`;
+                </div>`;
+            }
         }
       });
     }
   
-    // 6. FUNCIÓN AUXILIAR PARA BASE64
+    // 6. FUNCIÓN AUXILIAR PARA OBTENER BASE64 DEL ARCHIVO
     const getBase64 = (fileInputId, fileNamePrefix) => {
       return new Promise((resolve) => {
         const input = document.getElementById(fileInputId);
@@ -177,18 +190,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('btnEnviar');
         const status = document.getElementById('status');
   
-        // AQUÍ REVISA QUE ESTÉ TU URL CORRECTA DEL FLUJO HTTP DE POWER AUTOMATE
+        // URL DE TU FLUJO DE POWER AUTOMATE
         const URL_POWER_AUTOMATE = "https://defaultc7901014556049efa6893c215c6092.ee.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/31/workflows/f2d4f180c12c4b2486349a51d7d4788d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0P9T29VKyN3-neFRYyBpxZHl9d2U82n_ImX38AwAfTM";
   
         btn.disabled = true;
-        status.style.color = '#0369a1';
-        status.style.backgroundColor = '#e0f2fe';
-        status.innerText = '⏳ Guardando expediente en SharePoint...';
+        if(status) {
+            status.style.color = '#0369a1';
+            status.style.backgroundColor = '#e0f2fe';
+            status.style.padding = '10px';
+            status.style.borderRadius = '5px';
+            status.innerText = '⏳ Procesando documentos y guardando expediente en SharePoint... (No cierres la página)';
+        }
         
         try {
             let archivosArray = [];
             
-            // Subir archivos fijos
+            // Recolectar archivos obligatorios
             const docsFijos = [
                 { id: 'fileActaNac', prefijo: 'Acta_Nacimiento' },
                 { id: 'fileIne', prefijo: 'INE' },
@@ -203,23 +220,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(fileData) archivosArray.push(fileData);
             }
   
-            // Subir archivo de pareja (si existe)
+            // Recolectar archivo de pareja (si existe)
             let filePareja = await getBase64('fileActaPareja', 'Acta_Pareja');
             if(filePareja) archivosArray.push(filePareja);
   
-            // Subir archivos de hijos (si existen)
+            // Recolectar archivos de hijos (si existen)
             let cantHijos = parseInt(document.getElementById('cantidadHijos')?.value || "0");
             for (let i = 1; i <= cantHijos; i++) {
                 let fileHijo = await getBase64(`fileActaHijo${i}`, `Acta_Hijo_${i}`);
                 if(fileHijo) archivosArray.push(fileHijo);
             }
   
-            // Preparar Colonia
-            let coloniaFinal = !document.getElementById('container-colonia-select').classList.contains('hidden') 
-                            ? document.getElementById('colonia-select').value 
-                            : document.getElementById('colonia-input').value;
+            // Resolver origen de la colonia
+            let coloniaFinal = "";
+            const containerSelect = document.getElementById('container-colonia-select');
+            if(containerSelect && !containerSelect.classList.contains('hidden')) {
+                coloniaFinal = document.getElementById('colonia-select')?.value || "";
+            } else {
+                coloniaFinal = document.getElementById('colonia-input')?.value || "";
+            }
   
-            // ARMAR EL PAYLOAD EXACTO PARA SHAREPOINT
+            // PAYLOAD BLINDADO CON NULL PARA SHAREPOINT
             const payload = {
                 "datos": {
                     "Nombre": document.getElementById('nombre')?.value || "",
@@ -242,35 +263,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     "ContactoEmerg2": document.getElementById('nombreContactoEmergencia2')?.value || "",
                     "TelEmerg2": document.getElementById('telefonoContactoEmergencia2')?.value || "",
                     "TallaPlayera": document.getElementById('tallaPlayera')?.value || "",
-                    "TallaCalzado": document.getElementById('tallaCalzado')?.value || "",
+                    "TallaCalzado": document.getElementById('tallaCalzado')?.value || null,
                     "TieneHijos": document.getElementById('tieneHijos')?.value || "",
-                    "CantidadHijos": document.getElementById('cantidadHijos')?.value || "",
+                    "CantidadHijos": document.getElementById('cantidadHijos')?.value || null,
                     "Pareja": document.getElementById('pareja')?.value || "",
+                    "NacPareja": document.getElementById('fechaNacPareja')?.value || null,
                     "Hijo1": document.getElementById('hijo1')?.value || "",
-                    "NacHijo1": document.getElementById('fechaNacHijo1')?.value || "",
+                    "NacHijo1": document.getElementById('fechaNacHijo1')?.value || null,
                     "Hijo2": document.getElementById('hijo2')?.value || "",
-                    "NacHijo2": document.getElementById('fechaNacHijo2')?.value || "",
+                    "NacHijo2": document.getElementById('fechaNacHijo2')?.value || null,
                     "Hijo3": document.getElementById('hijo3')?.value || "",
-                    "NacHijo3": document.getElementById('fechaNacHijo3')?.value || "",
+                    "NacHijo3": document.getElementById('fechaNacHijo3')?.value || null,
                     "Hijo4": document.getElementById('hijo4')?.value || "",
-                    "NacHijo4": document.getElementById('fechaNacHijo4')?.value || "",
+                    "NacHijo4": document.getElementById('fechaNacHijo4')?.value || null,
                     "Hijo5": document.getElementById('hijo5')?.value || "",
-                    "NacHijo5": document.getElementById('fechaNacHijo5')?.value || "",
+                    "NacHijo5": document.getElementById('fechaNacHijo5')?.value || null,
                     "Hijo6": document.getElementById('hijo6')?.value || "",
-                    "NacHijo6": document.getElementById('fechaNacHijo6')?.value || "",
+                    "NacHijo6": document.getElementById('fechaNacHijo6')?.value || null,
                     "Hijo7": document.getElementById('hijo7')?.value || "",
-                    "NacHijo7": document.getElementById('fechaNacHijo7')?.value || "",
+                    "NacHijo7": document.getElementById('fechaNacHijo7')?.value || null,
                     "Hijo8": document.getElementById('hijo8')?.value || "",
-                    "NacHijo8": document.getElementById('fechaNacHijo8')?.value || "",
+                    "NacHijo8": document.getElementById('fechaNacHijo8')?.value || null,
                     "Hijo9": document.getElementById('hijo9')?.value || "",
-                    "NacHijo9": document.getElementById('fechaNacHijo9')?.value || "",
+                    "NacHijo9": document.getElementById('fechaNacHijo9')?.value || null,
                     "Hijo10": document.getElementById('hijo10')?.value || "",
-                    "NacHijo10": document.getElementById('fechaNacHijo10')?.value || ""
+                    "NacHijo10": document.getElementById('fechaNacHijo10')?.value || null
                 },
                 "archivos": archivosArray
             };
   
-            // MANDAR EL POST AL AUTOMATE
+            // POST HACIA POWER AUTOMATE
             const response = await fetch(URL_POWER_AUTOMATE, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -278,13 +300,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
   
             if(response.ok) {
-                status.style.color = '#15803d';
-                status.style.backgroundColor = '#dcfce3';
-                status.innerText = '✅ ¡Expediente guardado exitosamente en SharePoint!';
+                if(status) {
+                    status.style.color = '#15803d';
+                    status.style.backgroundColor = '#dcfce3';
+                    status.innerText = '✅ ¡Expediente y documentos guardados exitosamente en SharePoint!';
+                }
                 form.reset();
-                document.getElementById('seccionPareja').classList.add('hidden');
-                document.getElementById('seccionCantidadHijos').classList.add('hidden');
-                document.getElementById('contenedorHijos').innerHTML = '';
+                if(seccionPareja) seccionPareja.classList.add('hidden');
+                const seccionCantidadHijos = document.getElementById('seccionCantidadHijos');
+                if(seccionCantidadHijos) seccionCantidadHijos.classList.add('hidden');
+                if(contenedorHijos) contenedorHijos.innerHTML = '';
             } else {
                 const errText = await response.text();
                 throw new Error(errText);
@@ -292,10 +317,12 @@ document.addEventListener('DOMContentLoaded', function() {
   
         } catch (error) {
             console.error("Error Power Automate:", error);
-            status.style.color = '#b91c1c';
-            status.style.backgroundColor = '#fee2e2';
-            status.innerText = '❌ Hubo un problema al enviar. Intenta nuevamente.';
-            alert("Detalle del error técnico:\n" + error.message);
+            if(status) {
+                status.style.color = '#b91c1c';
+                status.style.backgroundColor = '#fee2e2';
+                status.innerText = '❌ Hubo un problema al enviar la información. Intenta nuevamente.';
+            }
+            alert("Error técnico de Power Automate:\n" + error.message);
         } finally {
             btn.disabled = false;
         }
