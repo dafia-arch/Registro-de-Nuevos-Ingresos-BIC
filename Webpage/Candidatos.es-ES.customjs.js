@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 1. AUTOFORMATO DE TEXTO (Mayúsculas Iniciales)
     document.addEventListener('input', function(e) {
       if (e.target.tagName === 'INPUT' && e.target.type === 'text') {
-        const excludedIds = ['rfc', 'curp', 'nss', 'codigoPostal'];
+        const excludedIds = ['rfc', 'curp', 'nss', 'codigoPostal', 'numeroDomicilio'];
         if (excludedIds.includes(e.target.id)) {
             if(e.target.id === 'rfc' || e.target.id === 'curp') e.target.value = e.target.value.toUpperCase();
             return;
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   
-    // 3. BÚSQUEDA DE CÓDIGO POSTAL (Usando tu JSON en GitHub)
+    // 3. BÚSQUEDA DE CÓDIGO POSTAL (Ruta Directa Cruda, 0% fallas)
     const cpInput = document.getElementById('codigoPostal');
     const cpStatus = document.getElementById('cp-status');
     const ciudadInput = document.getElementById('ciudad');
@@ -38,12 +38,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const containerSelect = document.getElementById('container-colonia-select');
     const containerInput = document.getElementById('container-colonia-input');
   
-    // URL DE TU ARCHIVO JSON EN GITHUB
-    const urlJSON = "https://raw.githubusercontent.com/dieguithoalvarez-arch/Registro-de-Nuevos-Ingresos-BIC/main/cp_mexico.json";
+    const urlJSON = "https://raw.githubusercontent.com/dieguithoalvarez-arch/Registro-de-Nuevos-Ingresos-BIC/main/Codigos%20Postales/cp_mexico.json";
     let datosCPOffline = [];
   
-    // Cargar el JSON al inicio para que esté listo
-    fetch(urlJSON).then(r => r.json()).then(data => { datosCPOffline = data; }).catch(e => console.error("Error cargando CP", e));
+    fetch(urlJSON)
+        .then(r => r.json())
+        .then(data => { datosCPOffline = data; })
+        .catch(e => console.error("Error cargando CP:", e));
   
     if (cpInput) {
       cpInput.addEventListener('input', function() {
@@ -51,11 +52,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (cpValue.length === 5) {
           buscarCPLocal(cpValue);
         } else {
-          ciudadInput.value = '';
-          coloniaSelect.innerHTML = '<option value="">Primero ingresa un C.P.</option>';
-          cpStatus.innerText = '';
-          containerSelect.classList.remove('hidden');
-          containerInput.classList.add('hidden');
+            ciudadInput.value = '';
+            coloniaSelect.innerHTML = '<option value="">Primero ingresa un C.P.</option>';
+            cpStatus.innerText = '';
+            containerSelect.classList.remove('hidden');
+            containerInput.classList.add('hidden');
         }
       });
     }
@@ -77,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cpStatus.innerText = '✅ C.P. Encontrado';
         } else {
             cpStatus.style.color = '#d97706';
-            cpStatus.innerText = '⚠️ Ingresa manual';
+            cpStatus.innerText = '⚠️ C.P. no encontrado. Ingresa manual.';
             ciudadInput.value = '';
             containerSelect.classList.add('hidden');
             containerInput.classList.remove('hidden');
@@ -104,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   
-    // 5. LÓGICA DINÁMICA: HIJOS
+    // 5. LÓGICA DINÁMICA: HIJOS (AHORA CON CLASES CSS APLICADAS)
     const tieneHijos = document.getElementById('tieneHijos');
     const seccionCantidad = document.getElementById('seccionCantidadHijos');
     const cantidadHijos = document.getElementById('cantidadHijos');
@@ -131,10 +132,19 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="dynamic-box">
               <h4>Datos del Hijo ${i}</h4>
               <div class="grid-2">
-                <div class="form-group"><label>Nombre Completo *</label><input type="text" id="hijo${i}" required></div>
-                <div class="form-group"><label>Fecha Nacimiento *</label><input type="date" id="fechaNacHijo${i}" required></div>
+                <div class="form-group">
+                    <label>Nombre Completo *</label>
+                    <input type="text" id="hijo${i}" class="form-control-custom" required>
+                </div>
+                <div class="form-group">
+                    <label>Fecha Nacimiento *</label>
+                    <input type="date" id="fechaNacHijo${i}" class="form-control-custom" required>
+                </div>
               </div>
-              <div class="form-group"><label>📄 Acta de Nacimiento (PDF/JPG) *</label><input type="file" id="fileActaHijo${i}" accept=".pdf,image/*" required></div>
+              <div class="file-upload-wrapper mt-15">
+                <label>🍼 Acta de Nacimiento (PDF/JPG) *</label>
+                <input type="file" id="fileActaHijo${i}" accept=".pdf,image/*" class="form-control-custom" required>
+              </div>
             </div>`;
         }
       });
@@ -167,11 +177,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('btnEnviar');
         const status = document.getElementById('status');
   
-        // 🔴 AQUÍ ESTÁ TU URL OFICIAL CON LA FIRMA DE SEGURIDAD (SIG)
         const URL_POWER_AUTOMATE = "https://defaultc7901014556049efa6893c215c6092.ee.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/31/workflows/f2d4f180c12c4b2486349a51d7d4788d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0P9T29VKyN3-neFRYyBpxZHl9d2U82n_ImX38AwAfTM";
   
         btn.disabled = true;
         status.style.color = '#0369a1';
+        status.style.backgroundColor = '#e0f2fe';
         status.innerText = '⏳ Empacando expediente y enviando a Recursos Humanos...';
         
         let coloniaFinal = !document.getElementById('container-colonia-select').classList.contains('hidden') 
@@ -179,7 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             : document.getElementById('colonia-input').value;
   
         try {
-            // Empacar Documentos Fijos
             let archivosArray = [];
             
             const docsFijos = [
@@ -197,11 +206,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(fileData) archivosArray.push(fileData);
             }
   
-            // Empacar Documentos Dinámicos (Pareja)
             let filePareja = await getBase64('fileActaPareja', 'Acta_Pareja');
             if(filePareja) archivosArray.push(filePareja);
   
-            // Empacar Documentos Dinámicos (Hijos)
             let cantHijos = parseInt(document.getElementById('cantidadHijos')?.value || "0");
             let detallesHijos = "";
             for (let i = 1; i <= cantHijos; i++) {
@@ -210,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 detallesHijos += `Hijo ${i}: ${document.getElementById(`hijo${i}`).value} (${document.getElementById(`fechaNacHijo${i}`).value}) | `;
             }
   
-            // Armar Payload (JSON) para Power Automate
             const payload = {
               "datos": {
                   "Nombre": document.getElementById('nombre').value,
@@ -225,14 +231,14 @@ document.addEventListener('DOMContentLoaded', function() {
                   "CodigoPostal": document.getElementById('codigoPostal').value,
                   "Municipio": document.getElementById('ciudad').value,
                   "Colonia": coloniaFinal,
-                  "CalleNumero": document.getElementById('calleNumero').value,
+                  "Calle": document.getElementById('calle').value,
+                  "Numero": document.getElementById('numeroDomicilio').value,
                   "NombrePareja": document.getElementById('pareja')?.value || "",
                   "DetallesHijos": detallesHijos
               },
               "archivos": archivosArray
             };
   
-            // Envío HTTP POST
             const response = await fetch(URL_POWER_AUTOMATE, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -240,7 +246,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
   
             if(response.ok) {
-                status.style.color = 'green';
+                status.style.color = '#15803d';
+                status.style.backgroundColor = '#dcfce3';
                 status.innerText = '✅ ¡Expediente enviado exitosamente a Recursos Humanos!';
                 form.reset();
                 document.getElementById('seccionPareja').classList.add('hidden');
@@ -253,7 +260,8 @@ document.addEventListener('DOMContentLoaded', function() {
   
         } catch (error) {
             console.error("Error Power Automate:", error);
-            status.style.color = 'red';
+            status.style.color = '#b91c1c';
+            status.style.backgroundColor = '#fee2e2';
             status.innerText = '❌ Hubo un problema al enviar. Intenta nuevamente.';
             alert("Detalle del error técnico:\n" + error.message);
         } finally {
