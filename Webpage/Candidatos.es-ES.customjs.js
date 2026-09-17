@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const urlPowerAutomate = "/api/candidato";
+  // EL CORAZÓN DE LA SOLUCIÓN GITHUB PAGES: Fetch directo a PA (sin pasar por /api/ local)
+  const urlPowerAutomate = "https://defaultc7901014556049efa6893c215c6092.ee.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/31/workflows/f2d4f180c12c4b2486349a51d7d4788d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0P9T29VKyN3-neFRYyBpxZHl9d2U82n_ImX38AwAfTM";
 
   // 1. Autoformato de mayúsculas / minúsculas en tiempo real
   document.addEventListener('input', function(e) {
@@ -34,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // 3. Consulta de código postal y colonias
+  // 3. Consulta de código postal y colonias (JSON local de GitHub)
   const codigoPostal = document.getElementById('codigoPostal');
   const ciudad = document.getElementById('ciudad');
   const colonia = document.getElementById('colonia-input');
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   if (codigoPostal && ciudad && colonia) {
+    // Busca el JSON relativo en GitHub Pages
     const catalogoListo = fetch('Codigos%20Postales/cp_mexico.json')
       .then(response => {
         if (!response.ok) throw new Error('No se pudo cargar el catálogo postal');
@@ -94,6 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
         colonia.appendChild(option);
       });
       colonia.disabled = false;
+      document.getElementById('container-colonia-input').classList.remove('hidden');
       mostrarEstadoCP(`${resultados.length} colonia(s) disponible(s).`);
     };
 
@@ -101,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
     catalogoListo.then(actualizarDomicilio);
   }
 
-  // 4. Desplegable Dinámico: Estado Civil (Muestra Pareja si es Casado o Unión Libre)
+  // 4. Desplegable Dinámico: Estado Civil
   const estadoCivil = document.getElementById('estadoCivil');
   const seccionPareja = document.getElementById('seccionPareja');
   const inputPareja = document.getElementById('pareja');
@@ -128,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // 5. Desplegable Dinámico: Hijos (Muestra cantidad y genera formularios hijos)
+  // 5. Desplegable Dinámico: Hijos
   const tieneHijos = document.getElementById('tieneHijos');
   const seccionCantidad = document.getElementById('seccionCantidadHijos');
   const cantidadHijos = document.getElementById('cantidadHijos');
@@ -183,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
     reader.onerror = error => reject(error);
   });
 
-  // 6. Envío de Datos y Documentos
+  // 6. Envío de Datos y Documentos a Power Automate
   const form = document.getElementById('datosForm');
   if (form) {
     form.addEventListener('submit', async function(e) {
@@ -193,17 +196,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
       btn.disabled = true;
       status.style.color = '#0369a1';
-      status.innerText = '⏳ Subiendo documentos a SharePoint... (No cierres la página)';
+      status.innerText = '⏳ Procesando y subiendo datos a Power Automate... (No cierres la página)';
 
       let archivosArray = [];
       const procesarInput = async (inputId, prefijoNombre) => {
           const input = document.getElementById(inputId);
           if(input && input.files && input.files.length > 0) {
               const file = input.files[0];
-            const maxFileSize = 5 * 1024 * 1024;
-            if (file.size > maxFileSize) {
-              throw new Error(`El archivo "${file.name}" supera el límite de 5 MB.`);
-            }
+              const maxFileSize = 5 * 1024 * 1024; // 5 MB
+              if (file.size > maxFileSize) {
+                throw new Error(`El archivo "${file.name}" supera el límite de 5 MB.`);
+              }
               const extension = file.name.split('.').pop();
               const base64 = await getBase64(file);
               archivosArray.push({ "nombreArchivo": `${prefijoNombre}.${extension}`, "contenidoBase64": base64 });
@@ -226,61 +229,57 @@ document.addEventListener('DOMContentLoaded', function() {
           }
 
           const rfcCandidato = document.getElementById('rfc').value.toUpperCase();
-          const nombreCompleto = `${document.getElementById('nombre').value} ${document.getElementById('apellidoPaterno').value}`.trim();
+          const obtenerValor = id => document.getElementById(id)?.value?.trim() || '';
+          const obtenerFecha = id => {
+            const valor = obtenerValor(id);
+            return valor ? `${valor}T00:00:00Z` : null;
+          };
 
-            const obtenerValor = id => document.getElementById(id)?.value?.trim() || '';
-            const obtenerFecha = id => {
-              const valor = obtenerValor(id);
-              return valor ? `${valor}T00:00:00Z` : null;
-            };
-            const hijos = Array.from({ length: cantHijos }, (_, index) => ({
-              "nombre": obtenerValor(`hijo${index + 1}`),
-              "fechaNacimiento": obtenerFecha(`fechaNacHijo${index + 1}`),
-              "archivo": `Acta_Hijo_${index + 1}`
-            }));
-              const datos = {
-                "Nombre": obtenerValor('nombre'),
-                "SegundoNombre": obtenerValor('segundoNombre'),
-                "ApellidoPaterno": obtenerValor('apellidoPaterno'),
-                "ApellidoMaterno": obtenerValor('apellidoMaterno'),
-                "FechaNacimiento": obtenerFecha('fechaNacimiento'),
-                "EstadoCivil": obtenerValor('estadoCivil'),
-                "Curp": obtenerValor('curp'),
-                "Rfc": rfcCandidato,
-                "Nss": obtenerValor('nss'),
-                "CodigoPostal": obtenerValor('codigoPostal'),
-                "Municipio": obtenerValor('ciudad'),
-                "Colonia": obtenerValor('colonia-input'),
-                "Calle": obtenerValor('calle'),
-                "Numero": obtenerValor('numeroDomicilio'),
-                "WhatsApp": obtenerValor('telefonoWhatsapp'),
-                "Correo": obtenerValor('correo'),
-                "ContactoEmerg1": obtenerValor('nombreContactoEmergencia'),
-                "TelEmerg1": obtenerValor('telefonoContactoEmergencia'),
-                "ContactoEmerg2": obtenerValor('nombreContactoEmergencia2'),
-                "TelEmerg2": obtenerValor('telefonoContactoEmergencia2'),
-                "TallaPlayera": obtenerValor('tallaPlayera'),
-                "TallaCalzado": obtenerValor('tallaCalzado'),
-                "TieneHijos": obtenerValor('tieneHijos'),
-                "CantidadHijos": obtenerValor('cantidadHijos'),
-                "Pareja": obtenerValor('pareja'),
-                "NacPareja": obtenerFecha('fechaNacPareja'),
-                ...Object.fromEntries(Array.from({ length: 10 }, (_, index) => {
-                  const childNumber = index + 1;
-                  return [
-                    [`Hijo${childNumber}`, obtenerValor(`hijo${childNumber}`)],
-                    [`NacHijo${childNumber}`, obtenerFecha(`fechaNacHijo${childNumber}`)]
-                  ];
-                }).flat())
-              };
+          const datos = {
+            "NumeroEmpleado": obtenerValor('numeroEmpleado'), // Asegurar que exista si aplica
+            "Nombre": obtenerValor('nombre'),
+            "SegundoNombre": obtenerValor('segundoNombre'),
+            "ApellidoPaterno": obtenerValor('apellidoPaterno'),
+            "ApellidoMaterno": obtenerValor('apellidoMaterno'),
+            "FechaNacimiento": obtenerFecha('fechaNacimiento'),
+            "EstadoCivil": obtenerValor('estadoCivil'),
+            "Curp": obtenerValor('curp'),
+            "Rfc": rfcCandidato,
+            "Nss": obtenerValor('nss'),
+            "CodigoPostal": obtenerValor('codigoPostal'),
+            "Municipio": obtenerValor('ciudad'),
+            "Colonia": obtenerValor('colonia-input'),
+            "Calle": obtenerValor('calle'),
+            "Numero": obtenerValor('numeroDomicilio'),
+            "WhatsApp": obtenerValor('telefonoWhatsapp'),
+            "Correo": obtenerValor('correo'),
+            "ContactoEmerg1": obtenerValor('nombreContactoEmergencia'),
+            "TelEmerg1": obtenerValor('telefonoContactoEmergencia'),
+            "ContactoEmerg2": obtenerValor('nombreContactoEmergencia2'),
+            "TelEmerg2": obtenerValor('telefonoContactoEmergencia2'),
+            "TallaPlayera": obtenerValor('tallaPlayera'),
+            "TallaCalzado": obtenerValor('tallaCalzado'),
+            "TieneHijos": obtenerValor('tieneHijos'),
+            "CantidadHijos": obtenerValor('cantidadHijos'),
+            "Pareja": obtenerValor('pareja'),
+            "NacPareja": obtenerFecha('fechaNacPareja'),
+            ...Object.fromEntries(Array.from({ length: 10 }, (_, index) => {
+              const childNumber = index + 1;
+              return [
+                [`Hijo${childNumber}`, obtenerValor(`hijo${childNumber}`)],
+                [`NacHijo${childNumber}`, obtenerFecha(`fechaNacHijo${childNumber}`)]
+              ];
+            }).flat())
+          };
 
-              const payload = {
-                "datos": datos,
-              "archivos": archivosArray
-            };
+          const payload = {
+            "datos": datos,
+            "archivos": archivosArray
+          };
 
           const paResponse = await fetch(urlPowerAutomate, {
-              method: "POST", headers: { "Content-Type": "application/json" },
+              method: "POST", 
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify(payload)
           });
 
@@ -290,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
 
           status.style.color = 'green'; 
-          status.innerText = '¡Candidato y documentos guardados exitosamente! ✅';
+          status.innerText = '¡Registro y documentos guardados exitosamente! ✅';
           form.reset();
           seccionPareja.classList.add('hidden');
           seccionCantidad.classList.add('hidden');
