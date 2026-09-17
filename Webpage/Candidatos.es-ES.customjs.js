@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const urlPowerAutomate = "https://defaultc7901014556049efa6893c215c6092.ee.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/31/workflows/f2d4f180c12c4b2486349a51d7d4788d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0P9T29VKyN3-neFRYyBpxZHl9d2U82n_ImX38AwAfTM";
+  const urlPowerAutomate = "/api/candidato";
 
   // 1. Autoformato de mayúsculas / minúsculas en tiempo real
   document.addEventListener('input', function(e) {
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
               "curp": document.getElementById('curp').value,
               "correo": document.getElementById('correo').value,
               "telefono": document.getElementById('telefonoWhatsapp').value,
-              "archivostotales": archivosArray
+              "archivos": archivosArray
           };
 
           const paResponse = await fetch(urlPowerAutomate, {
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch (err) {
           console.error(err); 
           status.style.color = '#b42318';
-          status.innerText = err.message.includes('supera el límite')
+          status.innerText = err.message.includes('supera el límite') || err.message.includes('Power Automate')
             ? err.message
             : 'Ocurrió un error al enviar. Revisa tu conexión o los archivos.';
       } finally {
