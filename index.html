@@ -1,181 +1,852 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Candidatos - BIC</title>
-    <link rel="stylesheet" href="Webpage/Candidatos.es-ES.customcss.css">
+
+    <title>Registro de Nuevos Ingresos | BIC</title>
+
+    <link rel="stylesheet" href="Candidatos-es-ES.customcss.css">
 </head>
+
 <body>
 
-<div class="form-container">
-    <img src="Imagenes/Logo.png" alt="Logo BIC" onerror="this.style.display='none'" class="top-logo" />
-    <div class="form-header">
-        <h2>Registro de Nuevo Ingreso</h2>
-        <div class="badge-anon">📝 Portal de Atracción de Talento BIC</div>
-        <p>Por favor, completa tu información y sube tus documentos.</p>
-    </div>
+    <main class="layout-row">
 
-    <form id="datosForm" class="form-card">
-        
-        <!-- SECCIÓN 1: DATOS PERSONALES -->
-        <h3 class="section-title">
-            <img src="Imagenes/Datos.png" alt="" onerror="this.style.display='none'" class="section-icon" /> Datos Personales
-        </h3>
-        <div class="grid-2">
-            <div class="form-group">
-                <label>Nombre(s) *</label>
-                <input type="text" id="nombre" class="form-control-custom" required>
-            </div>
-            <div class="form-group">
-                <label>Apellido Paterno *</label>
-                <input type="text" id="apellidoPaterno" class="form-control-custom" required>
-            </div>
-            <div class="form-group">
-                <label>Apellido Materno *</label>
-                <input type="text" id="apellidoMaterno" class="form-control-custom" required>
-            </div>
-            <div class="form-group">
-                <label>Fecha de Nacimiento *</label>
-                <input type="date" id="fechaNacimiento" class="form-control-custom" required>
-            </div>
-        </div>
+        <div class="form-card">
 
-        <div class="grid-3">
-            <div class="form-group">
-                <label>RFC (Con Homoclave) *</label>
-                <input type="text" id="rfc" class="form-control-custom" maxlength="13" required>
-            </div>
-            <div class="form-group">
-                <label>CURP *</label>
-                <input type="text" id="curp" class="form-control-custom" maxlength="18" required>
-            </div>
-            <div class="form-group">
-                <label>NSS (11 dígitos) *</label>
-                <input type="text" id="nss" class="form-control-custom" maxlength="11" required>
-            </div>
-        </div>
+            <!-- LOGO -->
+            <img
+                src="../Imagenes/Logo.png"
+                alt="BIC"
+                class="top-logo"
+                onerror="this.style.display='none'"
+            >
 
-        <div class="grid-2">
-            <div class="form-group">
-                <label><img src="Imagenes/whatsapp.png" alt="" onerror="this.style.display='none'" class="inline-icon" />WhatsApp / Celular *</label>
-                <input type="tel" id="telefonoWhatsapp" class="form-control-custom" maxlength="10" required>
-            </div>
-            <div class="form-group">
-                <label>Estado Civil *</label>
-                <select id="estadoCivil" class="form-control-custom" required>
-                    <option value="">Selecciona...</option>
-                    <option value="Soltero">Soltero(a)</option>
-                    <option value="Casado">Casado(a)</option>
-                    <option value="Unión Libre">Unión Libre</option>
-                    <option value="Divorciado">Divorciado(a)</option>
-                    <option value="Viudo">Viudo(a)</option>
-                </select>
-            </div>
-        </div>
+            <h2 class="form-title">
+                Registro de Candidatos
+            </h2>
 
-        <!-- SECCIÓN DINÁMICA: FAMILIA -->
-        <h3 class="section-title mt-30">
-            <img src="Imagenes/Family.png" alt="" onerror="this.style.display='none'" class="section-icon" /> Información Familiar
-        </h3>
-        
-        <div id="seccionPareja" class="hidden dynamic-box">
-            <h4>Datos de la Pareja</h4>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label>Nombre Completo de Pareja *</label>
-                    <input type="text" id="pareja" class="form-control-custom">
+            <div class="badge-anon">
+                📝 Portal de Atracción de Talento BIC
+            </div>
+
+            <form id="datosForm" novalidate>
+
+                <!-- ================================================= -->
+                <!-- DATOS PERSONALES -->
+                <!-- ================================================= -->
+
+                <h3 class="section-header">
+                    <img
+                        src="../Imagenes/Datos.png"
+                        alt=""
+                        class="section-icon"
+                        onerror="this.style.display='none'"
+                    >
+                    <span>Datos Personales</span>
+                </h3>
+
+                <div class="form-grid">
+
+                    <div class="form-group-custom">
+                        <label for="nombre">Nombre *</label>
+                        <input
+                            type="text"
+                            id="nombre"
+                            required
+                            class="form-control-custom"
+                        >
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="segundoNombre">Segundo Nombre</label>
+                        <input
+                            type="text"
+                            id="segundoNombre"
+                            class="form-control-custom"
+                        >
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="apellidoPaterno">Apellido Paterno *</label>
+                        <input
+                            type="text"
+                            id="apellidoPaterno"
+                            required
+                            class="form-control-custom"
+                        >
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="apellidoMaterno">Apellido Materno *</label>
+                        <input
+                            type="text"
+                            id="apellidoMaterno"
+                            required
+                            class="form-control-custom"
+                        >
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="fechaNacimiento">
+                            Fecha de Nacimiento *
+                        </label>
+                        <input
+                            type="date"
+                            id="fechaNacimiento"
+                            required
+                            class="form-control-custom"
+                        >
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="estadoCivil">Estado Civil</label>
+
+                        <select
+                            id="estadoCivil"
+                            class="form-control-custom"
+                        >
+                            <option value="">Seleccione...</option>
+                            <option value="Soltero(a)">Soltero(a)</option>
+                            <option value="Casado(a)">Casado(a)</option>
+                            <option value="Unión Libre">Unión Libre</option>
+                            <option value="Divorciado(a)">Divorciado(a)</option>
+                            <option value="Viudo(a)">Viudo(a)</option>
+                        </select>
+                    </div>
+
                 </div>
-                <div class="form-group">
-                    <label>Fecha Nacimiento Pareja *</label>
-                    <input type="date" id="fechaNacPareja" class="form-control-custom">
+
+
+                <!-- ================================================= -->
+                <!-- IDENTIFICACIONES -->
+                <!-- ================================================= -->
+
+                <h3 class="section-header">
+                    <img
+                        src="../Imagenes/Id.png"
+                        alt=""
+                        class="section-icon"
+                        onerror="this.style.display='none'"
+                    >
+                    <span>Identificaciones Oficiales</span>
+                </h3>
+
+                <div class="form-grid">
+
+                    <div class="form-group-custom">
+                        <label for="nss">
+                            Número de Seguro Social (NSS) *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nss"
+                            minlength="11"
+                            maxlength="11"
+                            pattern="\d{11}"
+                            inputmode="numeric"
+                            title="El NSS debe tener exactamente 11 dígitos"
+                            required
+                            placeholder="11 dígitos numéricos"
+                            class="form-control-custom"
+                        >
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="rfc">
+                            RFC (con Homoclave) *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="rfc"
+                            minlength="13"
+                            maxlength="13"
+                            required
+                            placeholder="13 caracteres"
+                            autocomplete="off"
+                            class="form-control-custom uppercase"
+                        >
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="curp">CURP *</label>
+
+                        <input
+                            type="text"
+                            id="curp"
+                            minlength="18"
+                            maxlength="18"
+                            required
+                            placeholder="18 caracteres"
+                            autocomplete="off"
+                            class="form-control-custom uppercase"
+                        >
+                    </div>
+
                 </div>
-            </div>
-            <div class="file-upload-wrapper mt-15">
-                <label>💍 Acta de Pareja (PDF/JPG) *</label>
-                <input type="file" id="fileActaPareja" class="form-control-custom" accept=".pdf,image/*">
-            </div>
+
+
+                <!-- ================================================= -->
+                <!-- DOMICILIO Y CONTACTO -->
+                <!-- ================================================= -->
+
+                <h3 class="section-header">
+                    <img
+                        src="../Imagenes/Domicilio.png"
+                        alt=""
+                        class="section-icon"
+                        onerror="this.style.display='none'"
+                    >
+                    <span>Domicilio y Contacto</span>
+                </h3>
+
+                <div class="form-grid">
+
+                    <div class="form-group-custom">
+
+                        <label for="codigoPostal">
+                            Código Postal *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="codigoPostal"
+                            minlength="5"
+                            maxlength="5"
+                            pattern="\d{5}"
+                            inputmode="numeric"
+                            title="El código postal debe ser exactamente de 5 dígitos"
+                            required
+                            class="form-control-custom"
+                        >
+
+                        <div
+                            id="cp-status"
+                            class="cp-status-msg"
+                        ></div>
+
+                    </div>
+
+
+                    <div class="form-group-custom">
+
+                        <label for="ciudad">
+                            Municipio
+                        </label>
+
+                        <input
+                            type="text"
+                            id="ciudad"
+                            readonly
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+
+                    <div
+                        id="container-colonia-select"
+                        class="form-group-custom"
+                    >
+
+                        <label for="colonia-select">
+                            Colonia o Fraccionamiento *
+                        </label>
+
+                        <select
+                            id="colonia-select"
+                            class="form-control-custom"
+                        >
+
+                            <option value="">
+                                Primero ingresa un C.P.
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div
+                        id="container-colonia-input"
+                        class="form-group-custom hidden"
+                    >
+
+                        <label for="colonia-input">
+                            Colonia (Manual) *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="colonia-input"
+                            placeholder="Ingresa tu colonia"
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group-custom">
+
+                        <label for="calle">
+                            Calle
+                        </label>
+
+                        <input
+                            type="text"
+                            id="calle"
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group-custom">
+
+                        <label for="numeroDomicilio">
+                            Número
+                        </label>
+
+                        <input
+                            type="text"
+                            id="numeroDomicilio"
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group-custom">
+
+                        <label for="telefonoWhatsapp">
+
+                            <img
+                                src="../Imagenes/whatsapp.png"
+                                alt=""
+                                class="inline-icon"
+                                onerror="this.style.display='none'"
+                            >
+
+                            <span>Teléfono (WhatsApp) *</span>
+
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="telefonoWhatsapp"
+                            minlength="10"
+                            maxlength="10"
+                            pattern="\d{10}"
+                            inputmode="numeric"
+                            required
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group-custom">
+
+                        <label for="correo">
+                            Correo Electrónico
+                        </label>
+
+                        <input
+                            type="email"
+                            id="correo"
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- EXPEDIENTE DIGITAL -->
+                <!-- ================================================= -->
+
+                <h3 class="section-header">
+
+                    <img
+                        src="../Imagenes/Folder.png"
+                        alt=""
+                        class="section-icon"
+                        onerror="this.style.display='none'"
+                    >
+
+                    <span>
+                        Expediente Digital (Documentos Básicos)
+                    </span>
+
+                </h3>
+
+                <p class="helper-text">
+                    Formatos permitidos: PDF, JPG y PNG.
+                    Tamaño máximo recomendado: 5 MB por archivo.
+                </p>
+
+
+                <div class="form-grid">
+
+                    <div class="file-upload-wrapper">
+                        <label for="fileActaNac">
+                            📄 Acta de Nacimiento *
+                        </label>
+
+                        <input
+                            type="file"
+                            id="fileActaNac"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required
+                            class="form-control-custom"
+                        >
+                    </div>
+
+
+                    <div class="file-upload-wrapper">
+                        <label for="fileNss">
+                            📄 Número de Seguro Social (NSS) *
+                        </label>
+
+                        <input
+                            type="file"
+                            id="fileNss"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required
+                            class="form-control-custom"
+                        >
+                    </div>
+
+
+                    <div class="file-upload-wrapper">
+                        <label for="fileCsf">
+                            📄 Constancia de Situación Fiscal *
+                        </label>
+
+                        <input
+                            type="file"
+                            id="fileCsf"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required
+                            class="form-control-custom"
+                        >
+                    </div>
+
+
+                    <div class="file-upload-wrapper">
+                        <label for="fileCurp">
+                            📄 CURP *
+                        </label>
+
+                        <input
+                            type="file"
+                            id="fileCurp"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required
+                            class="form-control-custom"
+                        >
+                    </div>
+
+
+                    <div class="file-upload-wrapper">
+                        <label for="fileDomicilio">
+                            🏠 Comprobante de Domicilio *
+                        </label>
+
+                        <input
+                            type="file"
+                            id="fileDomicilio"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required
+                            class="form-control-custom"
+                        >
+                    </div>
+
+
+                    <div class="file-upload-wrapper">
+                        <label for="fileEstudios">
+                            🎓 Comprobante de Estudios
+                        </label>
+
+                        <input
+                            type="file"
+                            id="fileEstudios"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            class="form-control-custom"
+                        >
+                    </div>
+
+
+                    <div class="file-upload-wrapper">
+                        <label for="fileIne">
+                            🪪 INE (Ambos Lados) *
+                        </label>
+
+                        <input
+                            type="file"
+                            id="fileIne"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required
+                            class="form-control-custom"
+                        >
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- EMERGENCIA Y TALLAS -->
+                <!-- ================================================= -->
+
+                <h3 class="section-header">
+
+                    <img
+                        src="../Imagenes/Emergencia.png"
+                        alt=""
+                        class="section-icon"
+                        onerror="this.style.display='none'"
+                    >
+
+                    <span>
+                        Contactos de Emergencia y Tallas
+                    </span>
+
+                </h3>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group-custom">
+
+                        <label for="nombreContactoEmergencia">
+                            Contacto de Emergencia 1 *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombreContactoEmergencia"
+                            required
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group-custom">
+
+                        <label for="telefonoContactoEmergencia">
+
+                            <img
+                                src="../Imagenes/whatsapp.png"
+                                alt=""
+                                class="inline-icon"
+                                onerror="this.style.display='none'"
+                            >
+
+                            <span>
+                                Tel. Emergencia 1 (WhatsApp) *
+                            </span>
+
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="telefonoContactoEmergencia"
+                            minlength="10"
+                            maxlength="10"
+                            pattern="\d{10}"
+                            inputmode="numeric"
+                            required
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group-custom">
+
+                        <label for="nombreContactoEmergencia2">
+                            Contacto de Emergencia 2
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombreContactoEmergencia2"
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group-custom">
+
+                        <label for="telefonoContactoEmergencia2">
+
+                            <img
+                                src="../Imagenes/whatsapp.png"
+                                alt=""
+                                class="inline-icon"
+                                onerror="this.style.display='none'"
+                            >
+
+                            <span>
+                                Tel. Emergencia 2 (WhatsApp)
+                            </span>
+
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="telefonoContactoEmergencia2"
+                            minlength="10"
+                            maxlength="10"
+                            pattern="\d{10}"
+                            inputmode="numeric"
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group-custom">
+
+                        <label for="tallaPlayera">
+                            Talla de Playera
+                        </label>
+
+                        <select
+                            id="tallaPlayera"
+                            class="form-control-custom"
+                        >
+
+                            <option value="">Seleccione...</option>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="2XL">2XL</option>
+                            <option value="3XL">3XL</option>
+                            <option value="4XL">4XL</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group-custom">
+
+                        <label for="tallaCalzado">
+                            Talla de Calzado (Mexicana 21 a 30)
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.5"
+                            min="21"
+                            max="30"
+                            id="tallaCalzado"
+                            placeholder="Ej. 26.5"
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- INFORMACIÓN FAMILIAR -->
+                <!-- ================================================= -->
+
+                <h3 class="section-header">
+
+                    <img
+                        src="../Imagenes/Family.png"
+                        alt=""
+                        class="section-icon"
+                        onerror="this.style.display='none'"
+                    >
+
+                    <span>Información Familiar</span>
+
+                </h3>
+
+
+                <!-- PAREJA -->
+
+                <div
+                    id="seccionPareja"
+                    class="dynamic-section hidden"
+                >
+
+                    <h4 class="dynamic-title">
+                        Datos de la Pareja
+                    </h4>
+
+                    <div class="form-grid">
+
+                        <div class="form-group-custom">
+
+                            <label for="pareja">
+                                Nombre de Pareja
+                            </label>
+
+                            <input
+                                type="text"
+                                id="pareja"
+                                class="form-control-custom"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group-custom">
+
+                            <label for="fechaNacPareja">
+                                Fecha Nacimiento Pareja
+                            </label>
+
+                            <input
+                                type="date"
+                                id="fechaNacPareja"
+                                class="form-control-custom"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="file-upload-wrapper mb0">
+
+                        <label for="fileActaPareja">
+                            💍 Acta de Matrimonio / Unión Libre
+                        </label>
+
+                        <input
+                            type="file"
+                            id="fileActaPareja"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            class="form-control-custom"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- HIJOS -->
+
+                <div class="form-grid">
+
+                    <div class="form-group-custom">
+
+                        <label for="tieneHijos">
+                            ¿Tiene hijos?
+                        </label>
+
+                        <select
+                            id="tieneHijos"
+                            class="form-control-custom"
+                        >
+
+                            <option value="No">No</option>
+                            <option value="Si">Sí</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div
+                        id="seccionCantidadHijos"
+                        class="form-group-custom hidden"
+                    >
+
+                        <label for="cantidadHijos">
+                            ¿Cuántos hijos tiene?
+                        </label>
+
+                        <select
+                            id="cantidadHijos"
+                            class="form-control-custom"
+                        >
+
+                            <option value="0">
+                                Seleccione...
+                            </option>
+
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="contenedorHijos"
+                    class="children-container"
+                ></div>
+
+
+                <!-- BOTÓN -->
+
+                <button
+                    type="submit"
+                    id="btnEnviar"
+                    class="btn-submit"
+                >
+                    Guardar Candidato
+                </button>
+
+            </form>
+
+
+            <div
+                id="status"
+                class="status-msg"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+
+            <img
+                src="../Imagenes/barra.jpg"
+                alt="Barra Decorativa"
+                class="bottom-bar"
+                onerror="this.style.display='none'"
+            >
+
         </div>
 
-        <div class="grid-2 mt-15">
-            <div class="form-group">
-                <label>¿Tienes Hijos?</label>
-                <select id="tieneHijos" class="form-control-custom">
-                    <option value="No">No</option>
-                    <option value="Si">Sí</option>
-                </select>
-            </div>
-            <div class="form-group hidden" id="seccionCantidadHijos">
-                <label>¿Cuántos hijos tienes? *</label>
-                <select id="cantidadHijos" class="form-control-custom">
-                    <option value="0">0</option>
-                    <option value="1">1</option><option value="2">2</option>
-                    <option value="3">3</option><option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-            </div>
-        </div>
-        
-        <!-- Aquí caen los hijos dinámicos -->
-        <div id="contenedorHijos"></div>
+    </main>
 
-        <!-- SECCIÓN 2: DOMICILIO -->
-        <h3 class="section-title mt-30">
-            <img src="Imagenes/Domicilio.png" alt="" onerror="this.style.display='none'" class="section-icon" /> Domicilio
-        </h3>
-        <div class="grid-2">
-            <div class="form-group">
-                <label>Código Postal * <span id="cp-status" style="font-size: 0.85em; margin-left: 10px;"></span></label>
-                <input type="text" id="codigoPostal" class="form-control-custom" maxlength="5" required>
-            </div>
-            <div class="form-group">
-                <label>Municipio/Ciudad *</label>
-                <input type="text" id="ciudad" class="form-control-custom" readonly required>
-            </div>
-        </div>
-        <div class="grid-2">
-            <div class="form-group" id="container-colonia-select">
-                <label>Colonia *</label>
-                <select id="colonia-select" class="form-control-custom"></select>
-            </div>
-            <div class="form-group hidden" id="container-colonia-input">
-                <label>Colonia (Escríbela) *</label>
-                <input type="text" id="colonia-input" class="form-control-custom">
-            </div>
-            <div class="form-group">
-                <label>Calle *</label>
-                <input type="text" id="calle" class="form-control-custom" required>
-            </div>
-        </div>
-        <div class="grid-2">
-            <div class="form-group">
-                <label>Número (Exterior / Interior) *</label>
-                <input type="text" id="numeroDomicilio" class="form-control-custom" required>
-            </div>
-        </div>
 
-        <!-- SECCIÓN 3: EXPEDIENTE DIGITAL -->
-        <h3 class="section-title mt-30">
-            <img src="Imagenes/Folder.png" alt="" onerror="this.style.display='none'" class="section-icon" /> Expediente Digital (PDF o Imagen)
-        </h3>
-        <div class="grid-2">
-            <div class="file-upload-wrapper"><label>📄 Acta de Nacimiento *</label><input type="file" id="fileActaNac" class="form-control-custom" accept=".pdf,image/*" required></div>
-            <div class="file-upload-wrapper"><label>🪪 INE (Frente y Vuelta) *</label><input type="file" id="fileIne" class="form-control-custom" accept=".pdf,image/*" required></div>
-            <div class="file-upload-wrapper"><label>📄 CURP *</label><input type="file" id="fileCurp" class="form-control-custom" accept=".pdf,image/*" required></div>
-            <div class="file-upload-wrapper"><label>📄 Constancia Situación Fiscal *</label><input type="file" id="fileCsf" class="form-control-custom" accept=".pdf,image/*" required></div>
-            <div class="file-upload-wrapper"><label>🏥 Número de Seguro Social *</label><input type="file" id="fileNss" class="form-control-custom" accept=".pdf,image/*" required></div>
-            <div class="file-upload-wrapper"><label>🏠 Comprobante de Domicilio *</label><input type="file" id="fileDomicilio" class="form-control-custom" accept=".pdf,image/*" required></div>
-            <div class="file-upload-wrapper"><label>🎓 Comprobante de Estudios *</label><input type="file" id="fileEstudios" class="form-control-custom" accept=".pdf,image/*" required></div>
-        </div>
+    <script src="Candidatos-es-ES.customjs.js"></script>
 
-        <div id="status" class="status-message"></div>
-
-        <button type="submit" id="btnEnviar" class="btn-submit">Guardar Candidato y Expediente</button>
-    </form>
-    
-    <img src="Imagenes/barra.jpg" alt="Barra Decorativa" onerror="this.style.display='none'" style="width:100%; border-radius:8px; margin-top:40px;" />
-</div>
-
-<script src="Webpage/Candidatos.es-ES.customjs.js"></script>
 </body>
 </html>
