@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // 1. AUTOFORMATO DE TEXTO (Mayúsculas Iniciales)
+    // 1. AUTOFORMATO DE TEXTO
     document.addEventListener('input', function(e) {
       if (e.target.tagName === 'INPUT' && e.target.type === 'text') {
         const excludedIds = ['rfc', 'curp', 'nss', 'codigoPostal', 'numeroDomicilio'];
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   
     // 2. FILTRO DE NÚMEROS
-    const camposNumericos = ['codigoPostal', 'telefonoWhatsapp', 'nss'];
+    const camposNumericos = ['codigoPostal', 'telefonoWhatsapp', 'nss', 'telefonoContactoEmergencia', 'telefonoContactoEmergencia2'];
     camposNumericos.forEach(id => {
       const campo = document.getElementById(id);
       if (campo) {
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   
-    // 3. BÚSQUEDA DE CÓDIGO POSTAL (Ruta Directa Cruda, 0% fallas)
+    // 3. BÚSQUEDA DE CÓDIGO POSTAL
     const cpInput = document.getElementById('codigoPostal');
     const cpStatus = document.getElementById('cp-status');
     const ciudadInput = document.getElementById('ciudad');
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   
-    // 5. LÓGICA DINÁMICA: HIJOS (AHORA CON CLASES CSS APLICADAS)
+    // 5. LÓGICA DINÁMICA: HIJOS
     const tieneHijos = document.getElementById('tieneHijos');
     const seccionCantidad = document.getElementById('seccionCantidadHijos');
     const cantidadHijos = document.getElementById('cantidadHijos');
@@ -162,14 +162,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         reader.readAsDataURL(file);
         reader.onload = () => resolve({
-            nombre: `${fileNamePrefix}.${extension}`,
-            contenido: reader.result.split(',')[1] 
+            nombreArchivo: `${fileNamePrefix}.${extension}`,
+            contenidoBase64: reader.result.split(',')[1] 
         });
         reader.onerror = () => resolve(null);
       });
     };
   
-    // 7. ENVÍO DE DATOS A POWER AUTOMATE
+    // 7. ENVÍO MAESTRO A POWER AUTOMATE
     const form = document.getElementById('datosForm');
     if (form) {
       form.addEventListener('submit', async function(e) {
@@ -177,20 +177,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('btnEnviar');
         const status = document.getElementById('status');
   
+        // AQUÍ REVISA QUE ESTÉ TU URL CORRECTA DEL FLUJO HTTP DE POWER AUTOMATE
         const URL_POWER_AUTOMATE = "https://defaultc7901014556049efa6893c215c6092.ee.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/31/workflows/f2d4f180c12c4b2486349a51d7d4788d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0P9T29VKyN3-neFRYyBpxZHl9d2U82n_ImX38AwAfTM";
   
         btn.disabled = true;
         status.style.color = '#0369a1';
         status.style.backgroundColor = '#e0f2fe';
-        status.innerText = '⏳ Empacando expediente y enviando a Recursos Humanos...';
+        status.innerText = '⏳ Guardando expediente en SharePoint...';
         
-        let coloniaFinal = !document.getElementById('container-colonia-select').classList.contains('hidden') 
-                            ? document.getElementById('colonia-select').value 
-                            : document.getElementById('colonia-input').value;
-  
         try {
             let archivosArray = [];
             
+            // Subir archivos fijos
             const docsFijos = [
                 { id: 'fileActaNac', prefijo: 'Acta_Nacimiento' },
                 { id: 'fileIne', prefijo: 'INE' },
@@ -200,45 +198,79 @@ document.addEventListener('DOMContentLoaded', function() {
                 { id: 'fileDomicilio', prefijo: 'Comprobante_Domicilio' },
                 { id: 'fileEstudios', prefijo: 'Comprobante_Estudios' }
             ];
-  
             for (let doc of docsFijos) {
                 let fileData = await getBase64(doc.id, doc.prefijo);
                 if(fileData) archivosArray.push(fileData);
             }
   
+            // Subir archivo de pareja (si existe)
             let filePareja = await getBase64('fileActaPareja', 'Acta_Pareja');
             if(filePareja) archivosArray.push(filePareja);
   
+            // Subir archivos de hijos (si existen)
             let cantHijos = parseInt(document.getElementById('cantidadHijos')?.value || "0");
-            let detallesHijos = "";
             for (let i = 1; i <= cantHijos; i++) {
                 let fileHijo = await getBase64(`fileActaHijo${i}`, `Acta_Hijo_${i}`);
                 if(fileHijo) archivosArray.push(fileHijo);
-                detallesHijos += `Hijo ${i}: ${document.getElementById(`hijo${i}`).value} (${document.getElementById(`fechaNacHijo${i}`).value}) | `;
             }
   
+            // Preparar Colonia
+            let coloniaFinal = !document.getElementById('container-colonia-select').classList.contains('hidden') 
+                            ? document.getElementById('colonia-select').value 
+                            : document.getElementById('colonia-input').value;
+  
+            // ARMAR EL PAYLOAD EXACTO PARA SHAREPOINT
             const payload = {
-              "datos": {
-                  "Nombre": document.getElementById('nombre').value,
-                  "ApellidoPaterno": document.getElementById('apellidoPaterno').value,
-                  "ApellidoMaterno": document.getElementById('apellidoMaterno').value,
-                  "RFC": document.getElementById('rfc').value,
-                  "CURP": document.getElementById('curp').value,
-                  "NSS": document.getElementById('nss').value,
-                  "FechaNacimiento": document.getElementById('fechaNacimiento').value,
-                  "EstadoCivil": document.getElementById('estadoCivil').value,
-                  "Telefono": document.getElementById('telefonoWhatsapp').value,
-                  "CodigoPostal": document.getElementById('codigoPostal').value,
-                  "Municipio": document.getElementById('ciudad').value,
-                  "Colonia": coloniaFinal,
-                  "Calle": document.getElementById('calle').value,
-                  "Numero": document.getElementById('numeroDomicilio').value,
-                  "NombrePareja": document.getElementById('pareja')?.value || "",
-                  "DetallesHijos": detallesHijos
-              },
-              "archivos": archivosArray
+                "datos": {
+                    "Nombre": document.getElementById('nombre')?.value || "",
+                    "SegundoNombre": document.getElementById('segundoNombre')?.value || "",
+                    "ApellidoPaterno": document.getElementById('apellidoPaterno')?.value || "",
+                    "ApellidoMaterno": document.getElementById('apellidoMaterno')?.value || "",
+                    "EstadoCivil": document.getElementById('estadoCivil')?.value || "",
+                    "Curp": document.getElementById('curp')?.value || "",
+                    "Rfc": document.getElementById('rfc')?.value || "",
+                    "Nss": document.getElementById('nss')?.value || "",
+                    "CodigoPostal": document.getElementById('codigoPostal')?.value || "",
+                    "Municipio": document.getElementById('ciudad')?.value || "",
+                    "Colonia": coloniaFinal,
+                    "Calle": document.getElementById('calle')?.value || "",
+                    "Numero": document.getElementById('numeroDomicilio')?.value || "",
+                    "WhatsApp": document.getElementById('telefonoWhatsapp')?.value || "",
+                    "Correo": document.getElementById('correo')?.value || "",
+                    "ContactoEmerg1": document.getElementById('nombreContactoEmergencia')?.value || "",
+                    "TelEmerg1": document.getElementById('telefonoContactoEmergencia')?.value || "",
+                    "ContactoEmerg2": document.getElementById('nombreContactoEmergencia2')?.value || "",
+                    "TelEmerg2": document.getElementById('telefonoContactoEmergencia2')?.value || "",
+                    "TallaPlayera": document.getElementById('tallaPlayera')?.value || "",
+                    "TallaCalzado": document.getElementById('tallaCalzado')?.value || "",
+                    "TieneHijos": document.getElementById('tieneHijos')?.value || "",
+                    "CantidadHijos": document.getElementById('cantidadHijos')?.value || "",
+                    "Pareja": document.getElementById('pareja')?.value || "",
+                    "Hijo1": document.getElementById('hijo1')?.value || "",
+                    "NacHijo1": document.getElementById('fechaNacHijo1')?.value || "",
+                    "Hijo2": document.getElementById('hijo2')?.value || "",
+                    "NacHijo2": document.getElementById('fechaNacHijo2')?.value || "",
+                    "Hijo3": document.getElementById('hijo3')?.value || "",
+                    "NacHijo3": document.getElementById('fechaNacHijo3')?.value || "",
+                    "Hijo4": document.getElementById('hijo4')?.value || "",
+                    "NacHijo4": document.getElementById('fechaNacHijo4')?.value || "",
+                    "Hijo5": document.getElementById('hijo5')?.value || "",
+                    "NacHijo5": document.getElementById('fechaNacHijo5')?.value || "",
+                    "Hijo6": document.getElementById('hijo6')?.value || "",
+                    "NacHijo6": document.getElementById('fechaNacHijo6')?.value || "",
+                    "Hijo7": document.getElementById('hijo7')?.value || "",
+                    "NacHijo7": document.getElementById('fechaNacHijo7')?.value || "",
+                    "Hijo8": document.getElementById('hijo8')?.value || "",
+                    "NacHijo8": document.getElementById('fechaNacHijo8')?.value || "",
+                    "Hijo9": document.getElementById('hijo9')?.value || "",
+                    "NacHijo9": document.getElementById('fechaNacHijo9')?.value || "",
+                    "Hijo10": document.getElementById('hijo10')?.value || "",
+                    "NacHijo10": document.getElementById('fechaNacHijo10')?.value || ""
+                },
+                "archivos": archivosArray
             };
   
+            // MANDAR EL POST AL AUTOMATE
             const response = await fetch(URL_POWER_AUTOMATE, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -248,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(response.ok) {
                 status.style.color = '#15803d';
                 status.style.backgroundColor = '#dcfce3';
-                status.innerText = '✅ ¡Expediente enviado exitosamente a Recursos Humanos!';
+                status.innerText = '✅ ¡Expediente guardado exitosamente en SharePoint!';
                 form.reset();
                 document.getElementById('seccionPareja').classList.add('hidden');
                 document.getElementById('seccionCantidadHijos').classList.add('hidden');
