@@ -1,5 +1,5 @@
 /* Contenedor Principal y Fondo */
-.layout-bg { background-color: #f3f4f6; }
+body { background-color: #f3f4f6; } 
 .layout-row { display: flex; flex-wrap: wrap; margin: 0px; min-height: auto; padding: 20px; justify-content: center; }
 .form-card { background-color: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); max-width: 900px; width: 100%; margin: 20px auto; border-top: 5px solid #0369a1; }
 
