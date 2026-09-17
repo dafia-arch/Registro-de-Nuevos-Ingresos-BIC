@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const urlPowerAutomate = "https://defaultc7901014556049efa6893c215c6092.ee.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/03/workflows/445c8d2ec59e4c12b2ef5c68dcc78b6d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=RPhkm2oBXM0qHwTctGwZRfv72LRWCOAiVIvR0tRQa7w";
+  const urlPowerAutomate = "https://defaultc7901014556049efa6893c215c6092.ee.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/31/workflows/f2d4f180c12c4b2486349a51d7d4788d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0P9T29VKyN3-neFRYyBpxZHl9d2U82n_ImX38AwAfTM";
 
   // 1. Autoformato de mayúsculas / minúsculas en tiempo real
   document.addEventListener('input', function(e) {
@@ -243,7 +243,10 @@ document.addEventListener('DOMContentLoaded', function() {
               body: JSON.stringify(payload)
           });
 
-          if (!paResponse.ok) throw new Error('Fallo al conectar con Power Automate');
+          if (!paResponse.ok) {
+            const detalle = await paResponse.text();
+            throw new Error(`Power Automate rechazó el registro (${paResponse.status}). ${detalle.slice(0, 180)}`);
+          }
 
           status.style.color = 'green'; 
           status.innerText = '¡Candidato y documentos guardados exitosamente! ✅';
