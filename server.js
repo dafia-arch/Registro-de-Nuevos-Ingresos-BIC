@@ -31,7 +31,10 @@ function serveStatic(request, response) {
     return;
   }
 
-  response.writeHead(200, { 'Content-Type': mimeTypes[path.extname(filePath)] || 'application/octet-stream' });
+  response.writeHead(200, {
+    'Content-Type': mimeTypes[path.extname(filePath)] || 'application/octet-stream',
+    'Cache-Control': 'no-store, no-cache, must-revalidate'
+  });
   fs.createReadStream(filePath).pipe(response);
 }
 
