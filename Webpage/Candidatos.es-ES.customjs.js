@@ -34,7 +34,74 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // 3. Desplegable Dinámico: Estado Civil (Muestra Pareja si es Casado o Unión Libre)
+  // 3. Consulta de código postal y colonias
+  const codigoPostal = document.getElementById('codigoPostal');
+  const ciudad = document.getElementById('ciudad');
+  const colonia = document.getElementById('colonia-input');
+  const cpStatus = document.getElementById('cp-status');
+  let catalogoCP = [];
+
+  const mostrarEstadoCP = (mensaje, esError = false) => {
+    if (!cpStatus) return;
+    cpStatus.textContent = mensaje;
+    cpStatus.style.color = esError ? '#b42318' : '#005b61';
+  };
+
+  if (codigoPostal && ciudad && colonia) {
+    const catalogoListo = fetch('Codigos%20Postales/cp_mexico.json')
+      .then(response => {
+        if (!response.ok) throw new Error('No se pudo cargar el catálogo postal');
+        return response.json();
+      })
+      .then(data => {
+        catalogoCP = Array.isArray(data) ? data : [];
+        return catalogoCP;
+      })
+      .catch(() => {
+        mostrarEstadoCP('El catálogo postal no está disponible.', true);
+        return [];
+      });
+
+    const actualizarDomicilio = () => {
+      const codigo = codigoPostal.value.trim();
+      ciudad.value = '';
+      colonia.innerHTML = '<option value="">Ingresa un código postal</option>';
+      colonia.disabled = true;
+
+      if (codigo.length < 5) {
+        mostrarEstadoCP('Escribe los 5 dígitos del código postal.');
+        return;
+      }
+
+      if (!catalogoCP.length) {
+        mostrarEstadoCP('Cargando catálogo postal...');
+        return;
+      }
+
+      const resultados = catalogoCP.filter(item => String(item.codigo).trim().padStart(5, '0') === codigo);
+      if (!resultados.length) {
+        mostrarEstadoCP('Código postal no encontrado. Verifica los datos.', true);
+        return;
+      }
+
+      ciudad.value = resultados[0].municipio || '';
+      colonia.innerHTML = '<option value="">Selecciona una colonia</option>';
+      const colonias = resultados.flatMap(item => item.colonias || [item.colonia]).filter(Boolean);
+      [...new Set(colonias)].forEach(nombreColonia => {
+        const option = document.createElement('option');
+        option.value = nombreColonia;
+        option.textContent = nombreColonia;
+        colonia.appendChild(option);
+      });
+      colonia.disabled = false;
+      mostrarEstadoCP(`${resultados.length} colonia(s) disponible(s).`);
+    };
+
+    codigoPostal.addEventListener('input', actualizarDomicilio);
+    catalogoListo.then(actualizarDomicilio);
+  }
+
+  // 4. Desplegable Dinámico: Estado Civil (Muestra Pareja si es Casado o Unión Libre)
   const estadoCivil = document.getElementById('estadoCivil');
   const seccionPareja = document.getElementById('seccionPareja');
   const inputPareja = document.getElementById('pareja');
@@ -61,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // 4. Desplegable Dinámico: Hijos (Muestra cantidad y genera formularios hijos)
+  // 5. Desplegable Dinámico: Hijos (Muestra cantidad y genera formularios hijos)
   const tieneHijos = document.getElementById('tieneHijos');
   const seccionCantidad = document.getElementById('seccionCantidadHijos');
   const cantidadHijos = document.getElementById('cantidadHijos');
@@ -116,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
     reader.onerror = error => reject(error);
   });
 
-  // 5. Envío de Datos y Documentos
+  // 6. Envío de Datos y Documentos
   const form = document.getElementById('datosForm');
   if (form) {
     form.addEventListener('submit', async function(e) {
@@ -133,6 +200,10 @@ document.addEventListener('DOMContentLoaded', function() {
           const input = document.getElementById(inputId);
           if(input && input.files && input.files.length > 0) {
               const file = input.files[0];
+            const maxFileSize = 5 * 1024 * 1024;
+            if (file.size > maxFileSize) {
+              throw new Error(`El archivo "${file.name}" supera el límite de 5 MB.`);
+            }
               const extension = file.name.split('.').pop();
               const base64 = await getBase64(file);
               archivosArray.push({ "nombreArchivo": `${prefijoNombre}.${extension}`, "contenidoBase64": base64 });
@@ -185,8 +256,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
       } catch (err) {
           console.error(err); 
-          status.style.color = 'red'; 
-          status.innerText = '⚠️ Ocurrió un error al enviar. Revisa tu conexión o los archivos.';
+          status.style.color = '#b42318';
+          status.innerText = err.message.includes('supera el límite')
+            ? err.message
+            : 'Ocurrió un error al enviar. Revisa tu conexión o los archivos.';
       } finally {
           btn.disabled = false;
       }

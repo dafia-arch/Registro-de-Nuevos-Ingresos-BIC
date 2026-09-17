@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Candidatos - BIC</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="Webpage/Candidatos.es-ES.customcss.css">
 </head>
 <body>
 
@@ -12,7 +12,7 @@
     <div class="form-card">
       
       <!-- Logo y Título -->
-      <img src="Logo.png" alt="Logo BIC" onerror="this.style.display='none'" class="top-logo" />
+      <img src="Imagenes/Logo.png" alt="Logo BIC" onerror="this.style.display='none'" class="top-logo" />
       <h2 class="form-title">Registro de Candidatos</h2>
       <div class="badge-anon">📝 Portal de Atracción de Talento BIC</div>
       
@@ -20,7 +20,7 @@
         
         <!-- DATOS PERSONALES -->
         <h3 class="section-header">
-          <img src="Datos.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Datos Personales</span>
+          <img src="Imagenes/Datos.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Datos Personales</span>
         </h3>
         <div class="form-grid">
           <div class="form-group-custom">
@@ -58,7 +58,7 @@
 
         <!-- IDENTIFICACIONES OFICIALES -->
         <h3 class="section-header">
-          <img src="Id.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Identificaciones Oficiales</span>
+          <img src="Imagenes/Id.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Identificaciones Oficiales</span>
         </h3>
         <div class="form-grid">
           <div class="form-group-custom">
@@ -77,7 +77,7 @@
 
         <!-- DOMICILIO Y CONTACTO -->
         <h3 class="section-header">
-          <img src="Domicilio.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Domicilio y Contacto</span>
+          <img src="Imagenes/Domicilio.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Domicilio y Contacto</span>
         </h3>
         <div class="form-grid">
           <div class="form-group-custom">
@@ -90,8 +90,10 @@
             <input type="text" id="ciudad" readonly class="form-control-custom readonly-input" />
           </div>
           <div class="form-group-custom">
-            <label>Colonia o Fraccionamiento *</label>
-            <input type="text" id="colonia-input" placeholder="Ingresa tu colonia" required class="form-control-custom" />
+            <label for="colonia-input">Colonia o Fraccionamiento *</label>
+            <select id="colonia-input" required class="form-control-custom" disabled>
+              <option value="">Ingresa un código postal</option>
+            </select>
           </div>
           <div class="form-group-custom">
             <label>Calle</label>
@@ -103,7 +105,7 @@
           </div>
           <div class="form-group-custom">
             <label>
-              <img src="whatsapp.png" alt="" onerror="this.style.display='none'" class="inline-icon" /><span> Teléfono (WhatsApp) *</span>
+              <img src="Imagenes/whatsapp.png" alt="" onerror="this.style.display='none'" class="inline-icon" /><span> Teléfono (WhatsApp) *</span>
             </label>
             <input type="tel" id="telefonoWhatsapp" minlength="10" maxlength="10" required class="form-control-custom" />
           </div>
@@ -115,7 +117,7 @@
 
         <!-- EXPEDIENTE DIGITAL -->
         <h3 class="section-header">
-          <img src="Folder.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Expediente Digital (Documentos Básicos)</span>
+          <img src="Imagenes/Folder.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Expediente Digital (Documentos Básicos)</span>
         </h3>
         <p class="helper-text">Formatos permitidos: PDF, JPG, PNG. Tamaño máximo recomendado: 5MB por archivo.</p>
         
@@ -152,7 +154,7 @@
 
         <!-- EMERGENCIA Y TALLAS -->
         <h3 class="section-header">
-          <img src="Emergencia.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Contactos de Emergencia y Tallas</span>
+          <img src="Imagenes/Emergencia.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Contactos de Emergencia y Tallas</span>
         </h3>
         <div class="form-grid">
           <div class="form-group-custom">
@@ -161,7 +163,7 @@
           </div>
           <div class="form-group-custom">
             <label>
-              <img src="whatsapp.png" alt="" onerror="this.style.display='none'" class="inline-icon" /><span> Tel. Emergencia 1 (WhatsApp) *</span>
+              <img src="Imagenes/whatsapp.png" alt="" onerror="this.style.display='none'" class="inline-icon" /><span> Tel. Emergencia 1 (WhatsApp) *</span>
             </label>
             <input type="tel" id="telefonoContactoEmergencia" minlength="10" maxlength="10" required class="form-control-custom" />
           </div>
@@ -171,7 +173,7 @@
           </div>
           <div class="form-group-custom">
             <label>
-              <img src="whatsapp.png" alt="" onerror="this.style.display='none'" class="inline-icon" /><span> Tel. Emergencia 2 (WhatsApp)</span>
+              <img src="Imagenes/whatsapp.png" alt="" onerror="this.style.display='none'" class="inline-icon" /><span> Tel. Emergencia 2 (WhatsApp)</span>
             </label>
             <input type="tel" id="telefonoContactoEmergencia2" minlength="10" maxlength="10" class="form-control-custom" />
           </div>
@@ -197,7 +199,7 @@
 
         <!-- INFORMACIÓN FAMILIAR -->
         <h3 class="section-header">
-          <img src="Family.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Información Familiar</span>
+          <img src="Imagenes/Family.png" alt="" onerror="this.style.display='none'" class="section-icon" /><span> Información Familiar</span>
         </h3>
         
         <!-- SECCIÓN PAREJA -->
@@ -245,11 +247,11 @@
         <button type="submit" id="btnEnviar" class="btn-submit">Guardar Candidato</button>
       </form>
 
-      <div id="status" class="status-msg"></div>
-      <img src="barra.jpg" alt="Barra Decorativa" onerror="this.style.display='none'" class="bottom-bar" />
+      <div id="status" class="status-msg" role="status" aria-live="polite"></div>
+      <img src="Imagenes/barra.jpg" alt="Barra Decorativa" onerror="this.style.display='none'" class="bottom-bar" />
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="Webpage/Candidatos.es-ES.customjs.js"></script>
 </body>
 </html>
