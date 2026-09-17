@@ -36,7 +36,9 @@ function serveStatic(request, response) {
 }
 
 const server = http.createServer((request, response) => {
-  if (request.method === 'POST' && request.url === '/api/candidato') {
+  const requestPath = new URL(request.url, `http://${request.headers.host || 'localhost'}`).pathname;
+
+  if (request.method === 'POST' && requestPath === '/api/candidato') {
     let body = '';
     request.on('data', chunk => {
       body += chunk;

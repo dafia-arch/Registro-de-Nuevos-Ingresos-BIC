@@ -228,15 +228,43 @@ document.addEventListener('DOMContentLoaded', function() {
           const rfcCandidato = document.getElementById('rfc').value.toUpperCase();
           const nombreCompleto = `${document.getElementById('nombre').value} ${document.getElementById('apellidoPaterno').value}`.trim();
 
-          const payload = {
-              "rfc": rfcCandidato,
+            const obtenerValor = id => document.getElementById(id)?.value?.trim() || '';
+            const hijos = Array.from({ length: cantHijos }, (_, index) => ({
+              "nombre": obtenerValor(`hijo${index + 1}`),
+              "fechaNacimiento": obtenerValor(`fechaNacHijo${index + 1}`),
+              "archivo": `Acta_Hijo_${index + 1}`
+            }));
+            const payload = {
+              "nombre": obtenerValor('nombre'),
+              "segundoNombre": obtenerValor('segundoNombre'),
+              "apellidoPaterno": obtenerValor('apellidoPaterno'),
+              "apellidoMaterno": obtenerValor('apellidoMaterno'),
               "nombreCompleto": nombreCompleto,
-              "nss": document.getElementById('nss').value,
-              "curp": document.getElementById('curp').value,
-              "correo": document.getElementById('correo').value,
-              "telefono": document.getElementById('telefonoWhatsapp').value,
+              "fechaNacimiento": obtenerValor('fechaNacimiento'),
+              "estadoCivil": obtenerValor('estadoCivil'),
+              "rfc": rfcCandidato,
+              "nss": obtenerValor('nss'),
+              "curp": obtenerValor('curp'),
+              "codigoPostal": obtenerValor('codigoPostal'),
+              "municipio": obtenerValor('ciudad'),
+              "colonia": obtenerValor('colonia-input'),
+              "calle": obtenerValor('calle'),
+              "numeroDomicilio": obtenerValor('numeroDomicilio'),
+              "correo": obtenerValor('correo'),
+              "telefono": obtenerValor('telefonoWhatsapp'),
+              "nombreContactoEmergencia": obtenerValor('nombreContactoEmergencia'),
+              "telefonoContactoEmergencia": obtenerValor('telefonoContactoEmergencia'),
+              "nombreContactoEmergencia2": obtenerValor('nombreContactoEmergencia2'),
+              "telefonoContactoEmergencia2": obtenerValor('telefonoContactoEmergencia2'),
+              "tallaPlayera": obtenerValor('tallaPlayera'),
+              "tallaCalzado": obtenerValor('tallaCalzado'),
+              "pareja": obtenerValor('pareja'),
+              "fechaNacPareja": obtenerValor('fechaNacPareja'),
+              "tieneHijos": obtenerValor('tieneHijos'),
+              "cantidadHijos": obtenerValor('cantidadHijos'),
+              "hijos": hijos,
               "archivos": archivosArray
-          };
+            };
 
           const paResponse = await fetch(urlPowerAutomate, {
               method: "POST", headers: { "Content-Type": "application/json" },
