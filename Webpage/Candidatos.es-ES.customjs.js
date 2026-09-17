@@ -234,35 +234,43 @@ document.addEventListener('DOMContentLoaded', function() {
               "fechaNacimiento": obtenerValor(`fechaNacHijo${index + 1}`),
               "archivo": `Acta_Hijo_${index + 1}`
             }));
-            const payload = {
-              "nombre": obtenerValor('nombre'),
-              "segundoNombre": obtenerValor('segundoNombre'),
-              "apellidoPaterno": obtenerValor('apellidoPaterno'),
-              "apellidoMaterno": obtenerValor('apellidoMaterno'),
-              "nombreCompleto": nombreCompleto,
-              "fechaNacimiento": obtenerValor('fechaNacimiento'),
-              "estadoCivil": obtenerValor('estadoCivil'),
-              "rfc": rfcCandidato,
-              "nss": obtenerValor('nss'),
-              "curp": obtenerValor('curp'),
-              "codigoPostal": obtenerValor('codigoPostal'),
-              "municipio": obtenerValor('ciudad'),
-              "colonia": obtenerValor('colonia-input'),
-              "calle": obtenerValor('calle'),
-              "numeroDomicilio": obtenerValor('numeroDomicilio'),
-              "correo": obtenerValor('correo'),
-              "telefono": obtenerValor('telefonoWhatsapp'),
-              "nombreContactoEmergencia": obtenerValor('nombreContactoEmergencia'),
-              "telefonoContactoEmergencia": obtenerValor('telefonoContactoEmergencia'),
-              "nombreContactoEmergencia2": obtenerValor('nombreContactoEmergencia2'),
-              "telefonoContactoEmergencia2": obtenerValor('telefonoContactoEmergencia2'),
-              "tallaPlayera": obtenerValor('tallaPlayera'),
-              "tallaCalzado": obtenerValor('tallaCalzado'),
-              "pareja": obtenerValor('pareja'),
-              "fechaNacPareja": obtenerValor('fechaNacPareja'),
-              "tieneHijos": obtenerValor('tieneHijos'),
-              "cantidadHijos": obtenerValor('cantidadHijos'),
-              "hijos": hijos,
+              const datos = {
+                "Nombre": obtenerValor('nombre'),
+                "SegundoNombre": obtenerValor('segundoNombre'),
+                "ApellidoPaterno": obtenerValor('apellidoPaterno'),
+                "ApellidoMaterno": obtenerValor('apellidoMaterno'),
+                "EstadoCivil": obtenerValor('estadoCivil'),
+                "Curp": obtenerValor('curp'),
+                "Rfc": rfcCandidato,
+                "Nss": obtenerValor('nss'),
+                "CodigoPostal": obtenerValor('codigoPostal'),
+                "Municipio": obtenerValor('ciudad'),
+                "Colonia": obtenerValor('colonia-input'),
+                "Calle": obtenerValor('calle'),
+                "Numero": obtenerValor('numeroDomicilio'),
+                "WhatsApp": obtenerValor('telefonoWhatsapp'),
+                "Correo": obtenerValor('correo'),
+                "ContactoEmerg1": obtenerValor('nombreContactoEmergencia'),
+                "TelEmerg1": obtenerValor('telefonoContactoEmergencia'),
+                "ContactoEmerg2": obtenerValor('nombreContactoEmergencia2'),
+                "TelEmerg2": obtenerValor('telefonoContactoEmergencia2'),
+                "TallaPlayera": obtenerValor('tallaPlayera'),
+                "TallaCalzado": obtenerValor('tallaCalzado'),
+                "TieneHijos": obtenerValor('tieneHijos'),
+                "CantidadHijos": obtenerValor('cantidadHijos'),
+                "Pareja": obtenerValor('pareja'),
+                "NacPareja": obtenerValor('fechaNacPareja'),
+                ...Object.fromEntries(Array.from({ length: 10 }, (_, index) => {
+                  const childNumber = index + 1;
+                  return [
+                    [`Hijo${childNumber}`, obtenerValor(`hijo${childNumber}`)],
+                    [`NacHijo${childNumber}`, obtenerValor(`fechaNacHijo${childNumber}`)]
+                  ];
+                }).flat())
+              };
+
+              const payload = {
+                "datos": datos,
               "archivos": archivosArray
             };
 
