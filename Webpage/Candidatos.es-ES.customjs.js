@@ -229,9 +229,13 @@ document.addEventListener('DOMContentLoaded', function() {
           const nombreCompleto = `${document.getElementById('nombre').value} ${document.getElementById('apellidoPaterno').value}`.trim();
 
             const obtenerValor = id => document.getElementById(id)?.value?.trim() || '';
+            const obtenerFecha = id => {
+              const valor = obtenerValor(id);
+              return valor ? `${valor}T00:00:00Z` : null;
+            };
             const hijos = Array.from({ length: cantHijos }, (_, index) => ({
               "nombre": obtenerValor(`hijo${index + 1}`),
-              "fechaNacimiento": obtenerValor(`fechaNacHijo${index + 1}`),
+              "fechaNacimiento": obtenerFecha(`fechaNacHijo${index + 1}`),
               "archivo": `Acta_Hijo_${index + 1}`
             }));
               const datos = {
@@ -239,6 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 "SegundoNombre": obtenerValor('segundoNombre'),
                 "ApellidoPaterno": obtenerValor('apellidoPaterno'),
                 "ApellidoMaterno": obtenerValor('apellidoMaterno'),
+                "FechaNacimiento": obtenerFecha('fechaNacimiento'),
                 "EstadoCivil": obtenerValor('estadoCivil'),
                 "Curp": obtenerValor('curp'),
                 "Rfc": rfcCandidato,
@@ -259,12 +264,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 "TieneHijos": obtenerValor('tieneHijos'),
                 "CantidadHijos": obtenerValor('cantidadHijos'),
                 "Pareja": obtenerValor('pareja'),
-                "NacPareja": obtenerValor('fechaNacPareja'),
+                "NacPareja": obtenerFecha('fechaNacPareja'),
                 ...Object.fromEntries(Array.from({ length: 10 }, (_, index) => {
                   const childNumber = index + 1;
                   return [
                     [`Hijo${childNumber}`, obtenerValor(`hijo${childNumber}`)],
-                    [`NacHijo${childNumber}`, obtenerValor(`fechaNacHijo${childNumber}`)]
+                    [`NacHijo${childNumber}`, obtenerFecha(`fechaNacHijo${childNumber}`)]
                   ];
                 }).flat())
               };
